@@ -1,87 +1,76 @@
 window.onload = function() {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-
-    const box = 20;
-    let snake = [];
-    snake[0] = { x: 9 * box, y: 10 * box };
-
-    let food = {
-        x: Math.floor(Math.random() * 19 + 1) * box,
-        y: Math.floor(Math.random() * 19 + 3) * box
+    let ball = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        radius: 10,
+        dx: 0,
+        dy: 0
     };
-
+    let gameOver = false;
     let score = 0;
+    let interval;
+    
+    // 加速度传感器事件
+    window.addEventListener("deviceorientation", handleOrientation, true);
 
-    let d;
-    document.addEventListener("keydown", direction);
-
-    function direction(event) {
-        let key = event.keyCode;
-        if (key == 37 && d != "RIGHT") {
-            d = "LEFT";
-        } else if (key == 38 && d != "DOWN") {
-            d = "UP";
-        } else if (key == 39 && d != "LEFT") {
-            d = "RIGHT";
-        } else if (key == 40 && d != "UP") {
-            d = "DOWN";
-        }
+    function handleOrientation(event) {
+        let gamma = event.gamma; // 左右倾斜
+        let beta = event.beta; // 前后倾斜
+        ball.dx = gamma / 10;
+        ball.dy = beta / 10;
     }
 
-    function collision(head, array) {
-        for (let i = 0; i < array.length; i++) {
-            if (head.x == array[i].x && head.y == array[i].y) {
-                return true;
-            }
-        }
-        return false;
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawScore() {
+        ctx.fillStyle = "black";
+        ctx.font = "20px Arial";
+        ctx.fillText("Score: " + score, 10, 20);
     }
 
     function draw() {
-        ctx.fillStyle = "#f0f0f0";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (gameOver) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawScore();
 
-        for (let i = 0; i < snake.length; i++) {
-            ctx.fillStyle = (i == 0) ? "green" : "white";
-            ctx.strokeStyle = "red";
-            ctx.fillRect(snake[i].x, snake[i].y, box, box);
-            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-        }
+        ball.x += ball.dx;
+        ball.y += ball.dy;
 
-        ctx.fillStyle = "red";
-        ctx.fillRect(food.x, food.y, box, box);
-
-        let snakeX = snake[0].x;
-        let snakeY = snake[0].y;
-
-        if (d == "LEFT") snakeX -= box;
-        if (d == "UP") snakeY -= box;
-        if (d == "RIGHT") snakeX += box;
-        if (d == "DOWN") snakeY += box;
-
-        if (snakeX == food.x && snakeY == food.y) {
-            score++;
-            food = {
-                x: Math.floor(Math.random() * 19 + 1) * box,
-                y: Math.floor(Math.random() * 19 + 3) * box
-            };
+        if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0 ||
+            ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+            gameOver = true;
+            clearInterval(interval);
+            alert("Game Over! Your score: " + score);
         } else {
-            snake.pop();
+            score++;
         }
-
-        let newHead = { x: snakeX, y: snakeY };
-
-        if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)) {
-            clearInterval(game);
-        }
-
-        snake.unshift(newHead);
-
-        ctx.fillStyle = "black";
-        ctx.font = "45px Changa one";
-        ctx.fillText(score, 2 * box, 1.6 * box);
     }
 
-    let game = setInterval(draw, 100);
+    function startGame() {
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx = 0;
+        ball.dy = 0;
+        score = 0;
+        gameOver = false;
+        interval = setInterval(draw, 100);
+    }
+
+    canvas.addEventListener('click', function() {
+        if (gameOver) {
+            startGame();
+        }
+    });
+
+    startGame();
 };
