@@ -4,7 +4,7 @@ window.onload = function() {
     let ball = {
         x: canvas.width / 2,
         y: canvas.height / 2,
-        radius: 20, // 增大球的半径
+        radius: 50, // 增大球的半径
         dx: 0,
         dy: 0
     };
