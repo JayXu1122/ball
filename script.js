@@ -4,7 +4,7 @@ window.onload = function() {
     let ball = {
         x: canvas.width / 2,
         y: canvas.height / 2,
-        radius: 30, // 增大球的半径
+        radius: 60, // 再次增大球的半径
         dx: 0,
         dy: 0
     };
@@ -18,15 +18,15 @@ window.onload = function() {
     function handleOrientation(event) {
         let gamma = event.gamma; // 左右倾斜
         let beta = event.beta; // 前后倾斜
-        ball.dx = gamma / 2.5; // 加快移动速度
-        ball.dy = beta / 2.5; // 加快移动速度
+        ball.dx = gamma / 1.25; // 再次加快移动速度
+        ball.dy = beta / 1.25; // 再次加快移动速度
     }
 
     function drawBall() {
-        // 绘制有重量感的钢球
-        let gradient = ctx.createRadialGradient(ball.x - 10, ball.y - 10, ball.radius - 10, ball.x, ball.y, ball.radius);
-        gradient.addColorStop(0, "#4B4B4B");
-        gradient.addColorStop(1, "#1C1C1C");
+        // 绘制有重量感的黑色钢球
+        let gradient = ctx.createRadialGradient(ball.x - 20, ball.y - 20, ball.radius - 20, ball.x, ball.y, ball.radius);
+        gradient.addColorStop(0, "#000000");
+        gradient.addColorStop(1, "#333333");
 
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
@@ -68,7 +68,7 @@ window.onload = function() {
         ball.dy = 0;
         score = 0;
         gameOver = false;
-        interval = setInterval(draw, 50); // 减少间隔时间以加快速度
+        interval = setInterval(draw, 25); // 再次减少间隔时间以加快速度
     }
 
     canvas.addEventListener('click', function() {
