@@ -4,7 +4,7 @@ window.onload = function() {
     let ball = {
         x: canvas.width / 2,
         y: canvas.height / 2,
-        radius: 50, // 增大球的半径
+        radius: 20, // 增大球的半径
         dx: 0,
         dy: 0
     };
@@ -38,4 +38,44 @@ window.onload = function() {
     function drawScore() {
         ctx.fillStyle = "black";
         ctx.font = "20px Arial";
-        ctx.fillText("Score: "
+        ctx.fillText("Score: " + score, 10, 20);
+    }
+
+    function draw() {
+        if (gameOver) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawScore();
+
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0 ||
+            ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+            gameOver = true;
+            clearInterval(interval);
+            alert("Game Over! Your score: " + score);
+        } else {
+            score++;
+        }
+    }
+
+    function startGame() {
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx = 0;
+        ball.dy = 0;
+        score = 0;
+        gameOver = false;
+        interval = setInterval(draw, 100);
+    }
+
+    canvas.addEventListener('click', function() {
+        if (gameOver) {
+            startGame();
+        }
+    });
+
+    startGame();
+};
